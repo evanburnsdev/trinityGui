@@ -17,8 +17,7 @@ SOURCES += main.cpp\
     announcedialog.cpp
 
 HEADERS  += mainwindow.h \
-    announcedialog.h \
-    test.h
+    announcedialog.h
 
 FORMS    += \
     ../Designer/mainwindow.ui \
