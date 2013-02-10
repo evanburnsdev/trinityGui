@@ -8,6 +8,7 @@
 #include <QDialog>
 #include <QMenuBar>
 #include "announcedialog.h"
+#include "accountcdldialog.h"
 
 namespace Ui {
 class MainWindow;
@@ -22,10 +23,12 @@ public:
     ~MainWindow();
 
 public slots:
+    void accountCDL();
+    void accountList();
+    void announceClickHandler();
+    void commandsClickHandler();
     void exitClickHandler();
     void gmListClickHandler();
-    void commandsClickHandler();
-    void announceClickHandler();
 
 
     void authProcessStarting();

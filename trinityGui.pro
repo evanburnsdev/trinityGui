@@ -14,13 +14,16 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    announcedialog.cpp
+    announcedialog.cpp \
+    accountcdldialog.cpp
 
 HEADERS  += mainwindow.h \
-    announcedialog.h
+    announcedialog.h \
+    accountcdldialog.h
 
 FORMS    += \
     ../Designer/mainwindow.ui \
-    ../Designer/announcedialog.ui
+    ../Designer/announcedialog.ui \
+    accountcdldialog.ui
 
 OTHER_FILES +=

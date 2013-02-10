@@ -15,6 +15,22 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+
+
+    //Setup Color Palettes
+    authTextPalette = ui->AuthLabel->palette();
+    worldTextPalette = ui->WorldLabel->palette();
+
+    //Set Signal/Slots
+    connect(myAuthProcess, SIGNAL(readyReadStandardError() ), this, SLOT(authReadyReadStandardError() ) );
+    connect(myWorldProcess, SIGNAL(readyReadStandardError() ), this, SLOT(worldReadyReadStandardError() ) );
+    connect(myWorldProcess, SIGNAL(readyRead() ), this, SLOT(worldTextSent()));
+    connect(myAuthProcess, SIGNAL(started() ), this, SLOT(authProcessStarting()));
+    connect(myAuthProcess, SIGNAL(finished(int) ), this, SLOT(authProcessStopping()));
+    connect(myWorldProcess, SIGNAL(started() ), this, SLOT(worldProcessStarting()));
+    connect(myWorldProcess, SIGNAL(finished(int) ), this, SLOT(worldProcessStopping()));
+
+
     /***********************************
      *The following will set up the menu
      **********************************/
@@ -67,22 +83,17 @@ MainWindow::MainWindow(QWidget *parent) :
                     //create Action
                     QAction *accountCreate = new QAction("&create", this);
                     accountSubMenu->addAction(accountCreate);
+                    connect(accountCreate, SIGNAL(triggered() ), this, SLOT(accountCDL() ) );
 
                     //delete Action
                     QAction *accountDelete = new QAction("&delete", this);
                     accountSubMenu->addAction(accountDelete);
-
-                    //lock Action
-                    QAction *accountLock = new QAction("&lock", this);
-                    accountSubMenu->addAction(accountLock);
+                    connect(accountDelete, SIGNAL(triggered() ), this, SLOT(accountCDL() ) );
 
                     //online list Action
                     QAction *onlineList = new QAction("&Online List", this);
                     accountSubMenu->addAction(onlineList);
-
-                    //password
-                    QAction *password = new QAction("&password", this);
-                    accountSubMenu->addAction(password);
+                    connect(onlineList, SIGNAL(triggered() ), this, SLOT(accountList() ) );
 
                     //set Menu
                     QAction *setMenu = new QAction("&set", this);
@@ -107,6 +118,7 @@ MainWindow::MainWindow(QWidget *parent) :
                             //password
                             QAction *password = new QAction("password", this);
                             setSubMenu->addAction(password);
+                            connect(password, SIGNAL(triggered() ), this, SLOT(accountCDL() ) );
                         }
                     }
                 }
@@ -304,18 +316,6 @@ MainWindow::MainWindow(QWidget *parent) :
         }
     }
 
-    //Setup Color Palettes
-    authTextPalette = ui->AuthLabel->palette();
-    worldTextPalette = ui->WorldLabel->palette();
-
-    //Set Signal/Slots
-    connect(myAuthProcess, SIGNAL(readyReadStandardError() ), this, SLOT(authReadyReadStandardError() ) );
-    connect(myWorldProcess, SIGNAL(readyReadStandardError() ), this, SLOT(worldReadyReadStandardError() ) );
-    connect(myWorldProcess, SIGNAL(readyRead() ), this, SLOT(worldTextSent()));
-    connect(myAuthProcess, SIGNAL(started() ), this, SLOT(authProcessStarting()));
-    connect(myAuthProcess, SIGNAL(finished(int) ), this, SLOT(authProcessStopping()));
-    connect(myWorldProcess, SIGNAL(started() ), this, SLOT(worldProcessStarting()));
-    connect(myWorldProcess, SIGNAL(finished(int) ), this, SLOT(worldProcessStopping()));
 }
 
 MainWindow::~MainWindow()
@@ -391,6 +391,19 @@ void MainWindow::exitClickHandler()
     myWorldProcess->terminate();
     myAuthProcess->terminate();
     this->close();
+}
+
+void MainWindow::accountCDL()
+{
+    AccountCDLDialog dialog(this);
+    dialog.exec();
+    QString string = dialog.accountString;
+    myWorldProcess->write(string.toAscii());
+}
+
+void MainWindow::accountList()
+{
+    myWorldProcess->write("account onlinelist\n");
 }
 
 void MainWindow::announceClickHandler()
