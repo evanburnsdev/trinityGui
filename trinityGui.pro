@@ -15,15 +15,18 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     announcedialog.cpp \
-    accountcdldialog.cpp
+    accountcdldialog.cpp \
+    itemchooser.cpp
 
 HEADERS  += mainwindow.h \
     announcedialog.h \
-    accountcdldialog.h
+    accountcdldialog.h \
+    itemchooser.h
 
 FORMS    += \
     ../Designer/mainwindow.ui \
     ../Designer/announcedialog.ui \
-    accountcdldialog.ui
+    accountcdldialog.ui \
+    itemchooser.ui
 
 OTHER_FILES +=

@@ -7,8 +7,12 @@
 #include <QProcessEnvironment>
 #include <QDialog>
 #include <QMenuBar>
+#include <QTableWidget>
+#include <QStringList>
+#include <QList>
 #include "announcedialog.h"
 #include "accountcdldialog.h"
+#include "itemchooser.h"
 
 namespace Ui {
 class MainWindow;
@@ -24,12 +28,14 @@ public:
 
 public slots:
     void accountCDL();
+    void itemchooserwindow();
+    void keyChooserWindow();
+
     void accountList();
     void announceClickHandler();
     void commandsClickHandler();
     void exitClickHandler();
     void gmListClickHandler();
-
 
     void authProcessStarting();
     void authProcessStopping();
@@ -38,7 +44,6 @@ public slots:
     void authReadyReadStandardError();
     void worldReadyReadStandardError();
     void worldTextSent();
-
 
     void authStartButtonClickHandler();
     void authStopButtonClickHandler();

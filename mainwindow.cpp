@@ -8,6 +8,10 @@ QObject *authParent;
 QObject *worldParent;
 QProcess *myAuthProcess = new QProcess(authParent);
 QProcess *myWorldProcess = new QProcess(worldParent);
+QTableWidget *itemTable;
+QStringList *keyData;
+QMenu *comeToMeSubMenu;
+QMenu *addItemSubMenu;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -16,6 +20,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
 
+    itemTable = new QTableWidget;
+    keyData = new QStringList;
 
     //Setup Color Palettes
     authTextPalette = ui->AuthLabel->palette();
@@ -31,291 +37,312 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(myWorldProcess, SIGNAL(finished(int) ), this, SLOT(worldProcessStopping()));
 
 
-    /***********************************
-     *The following will set up the menu
-     **********************************/
 
-    // File Menu
-    QAction *fileMenu;
-    fileMenu  = new QAction("&File", this);
-    menuBar()->addAction(fileMenu);
 
-    if(true){
-       //File Submenu
-        QMenu *fileSubMenu = new QMenu();
-        fileMenu->setMenu(fileSubMenu);
+        /***********************************
+         *The following will set up the menu
+         **********************************/
 
-        if(true){
-            //Server Location Action
-            QAction *serverLocationMenu = new QAction("&Server Location", this);
-            fileSubMenu->addAction(serverLocationMenu);
+        // File Menu
+        QAction *fileMenu;
+        fileMenu  = new QAction("&File", this);
+        menuBar()->addAction(fileMenu);
 
-            //Exit Action
-            QAction *exitAction = new QAction("&Exit", this);
-            fileSubMenu->addAction(exitAction);
-            connect(exitAction, SIGNAL(triggered() ), this, SLOT(exitClickHandler() ) );
+        if(true){ //File Submenu
+
+            QMenu *fileSubMenu = new QMenu();
+            fileMenu->setMenu(fileSubMenu);
+
+            if(true){
+                //Select Item DB Action
+                QAction *selectItem = new QAction("&Select Item List", this);
+                fileSubMenu->addAction(selectItem);
+                connect(selectItem, SIGNAL(triggered() ), this, SLOT(itemchooserwindow() ) );
+
+                //Select Item Key
+                QAction *selectKey = new QAction("Select Item Key", this);
+                fileSubMenu->addAction(selectKey);
+                connect(selectKey, SIGNAL(triggered() ), this, SLOT(keyChooserWindow() ) );
+
+                //Exit Action
+                QAction *exitAction = new QAction("&Exit", this);
+                fileSubMenu->addAction(exitAction);
+                connect(exitAction, SIGNAL(triggered() ), this, SLOT(exitClickHandler() ) );
+            }
         }
-    }
 
-    //Command Menu
-    QAction *commandMenu;
-    commandMenu = new QAction("&Commands", this);
-    menuBar()->addAction(commandMenu);
+        //Command Menu
+        QAction *commandMenu;
+        commandMenu = new QAction("&Commands", this);
+        menuBar()->addAction(commandMenu);
 
-    if(true){
-        //Command Submenu
-        QMenu *commandSubMenu = new QMenu();
-        commandMenu->setMenu(commandSubMenu);
+        if(true){   //Command Submenu
 
-        if(true){
-            //account Menu
-            QAction *accountMenu = new QAction(".&account", this);
-            commandSubMenu->addAction(accountMenu);
+            QMenu *commandSubMenu = new QMenu();
+            commandMenu->setMenu(commandSubMenu);
 
-            if(true)
-            {
-                //account Submenu
-                QMenu *accountSubMenu = new QMenu();
-                accountMenu->setMenu(accountSubMenu);
+            if(true){
+                //account Menu
+                QAction *accountMenu = new QAction(".&account", this);
+                commandSubMenu->addAction(accountMenu);
 
-                if(true)
+                if(true)  //account Submenu
                 {
-                    //create Action
-                    QAction *accountCreate = new QAction("&create", this);
-                    accountSubMenu->addAction(accountCreate);
-                    connect(accountCreate, SIGNAL(triggered() ), this, SLOT(accountCDL() ) );
 
-                    //delete Action
-                    QAction *accountDelete = new QAction("&delete", this);
-                    accountSubMenu->addAction(accountDelete);
-                    connect(accountDelete, SIGNAL(triggered() ), this, SLOT(accountCDL() ) );
-
-                    //online list Action
-                    QAction *onlineList = new QAction("&Online List", this);
-                    accountSubMenu->addAction(onlineList);
-                    connect(onlineList, SIGNAL(triggered() ), this, SLOT(accountList() ) );
-
-                    //set Menu
-                    QAction *setMenu = new QAction("&set", this);
-                    accountSubMenu->addAction(setMenu);
+                    QMenu *accountSubMenu = new QMenu();
+                    accountMenu->setMenu(accountSubMenu);
 
                     if(true)
                     {
-                        //set Submenu
-                        QMenu *setSubMenu = new QMenu();
-                        setMenu->setMenu(setSubMenu);
+                        //create Action
+                        QAction *accountCreate = new QAction("&create", this);
+                        accountSubMenu->addAction(accountCreate);
+                        connect(accountCreate, SIGNAL(triggered() ), this, SLOT(accountCDL() ) );
+
+                        //delete Action
+                        QAction *accountDelete = new QAction("&delete", this);
+                        accountSubMenu->addAction(accountDelete);
+                        connect(accountDelete, SIGNAL(triggered() ), this, SLOT(accountCDL() ) );
+
+                        //online list Action
+                        QAction *onlineList = new QAction("&Online List", this);
+                        accountSubMenu->addAction(onlineList);
+                        connect(onlineList, SIGNAL(triggered() ), this, SLOT(accountList() ) );
+
+                        //set Menu
+                        QAction *setMenu = new QAction("&set", this);
+                        accountSubMenu->addAction(setMenu);
 
                         if(true)
                         {
-                            //addon
-                            QAction *addon = new QAction("&addon", this);
-                            setSubMenu->addAction(addon);
+                            //set Submenu
+                            QMenu *setSubMenu = new QMenu();
+                            setMenu->setMenu(setSubMenu);
 
-                            //gmlevel
-                            QAction *gmLevel = new QAction("&gmlevel", this);
-                            setSubMenu->addAction(gmLevel);
+                            if(true)
+                            {
+                                //addon
+                                QAction *addon = new QAction("&addon", this);
+                                setSubMenu->addAction(addon);
+                                connect(addon, SIGNAL(triggered() ), this, SLOT(accountCDL() ) );
 
-                            //password
-                            QAction *password = new QAction("password", this);
-                            setSubMenu->addAction(password);
-                            connect(password, SIGNAL(triggered() ), this, SLOT(accountCDL() ) );
+                                //gmlevel
+                                QAction *gmLevel = new QAction("&gmlevel", this);
+                                setSubMenu->addAction(gmLevel);
+                                connect(gmLevel, SIGNAL(triggered() ), this, SLOT(accountCDL() ) );
+
+                                //password
+                                QAction *password = new QAction("password", this);
+                                setSubMenu->addAction(password);
+                                connect(password, SIGNAL(triggered() ), this, SLOT(accountCDL() ) );
+                            }
                         }
                     }
                 }
-            }
 
+                //add Item
+                QAction *addItemAction = new QAction(".a&dditem", this);
+                commandSubMenu->addAction(addItemAction);
+                connect(addItemAction, SIGNAL(triggered() ), this, SLOT(keyChooserWindow() ) );
 
-            //announce Action
-            QAction *announceAction = new QAction(".a&nnounce", this);
-            commandSubMenu->addAction(announceAction);
-            connect(announceAction, SIGNAL(triggered() ), this, SLOT(announceClickHandler() ) );
+                //additem Submenu
+                //addItemSubMenu = new QMenu();
+                //addItemAction->setMenu(addItemSubMenu);
 
-            //ban Menu
-            QAction *banMenu = new QAction(".&ban", this);
-            commandSubMenu->addAction(banMenu);
+                //announce Action
+                QAction *announceAction = new QAction(".a&nnounce", this);
+                commandSubMenu->addAction(announceAction);
+                connect(announceAction, SIGNAL(triggered() ), this, SLOT(announceClickHandler() ) );
 
-            if(true)
-            {
-                //ban Submenu
-                QMenu *banSubMenu = new QMenu();
-                banMenu->setMenu(banSubMenu);
+                //ban Menu
+                QAction *banMenu = new QAction(".&ban", this);
+                commandSubMenu->addAction(banMenu);
 
-                if(true)
+                if(true)   //ban Submenu
                 {
-                    //account Action
-                    QAction *accountAction = new QAction("&account", this);
-                    banSubMenu->addAction(accountAction);
 
-                    //character Action
-                    QAction *characterAction = new QAction("&character", this);
-                    banSubMenu->addAction(characterAction);
+                    QMenu *banSubMenu = new QMenu();
+                    banMenu->setMenu(banSubMenu);
 
-                    //ip Action
-                    QAction *ipAction = new QAction("&ip", this);
-                    banSubMenu->addAction(ipAction);
+                    if(true)
+                    {
+                        //account Action
+                        QAction *accountAction = new QAction("&account", this);
+                        banSubMenu->addAction(accountAction);
+
+                        //character Action
+                        QAction *characterAction = new QAction("&character", this);
+                        banSubMenu->addAction(characterAction);
+
+                        //ip Action
+                        QAction *ipAction = new QAction("&ip", this);
+                        banSubMenu->addAction(ipAction);
+                    }
                 }
-            }
 
-            //baninfo Menu
-            QAction *banInfoMenu = new QAction(".&baninfo", this);
-            commandSubMenu->addAction(banInfoMenu);
+                //baninfo Menu
+                QAction *banInfoMenu = new QAction(".&baninfo", this);
+                commandSubMenu->addAction(banInfoMenu);
 
-            if(true)
-            {
-                //baninfo Submenu
-                QMenu *banInfoSubMenu = new QMenu();
-                banInfoMenu->setMenu(banInfoSubMenu);
-
-                if(true)
+                if(true) //baninfo Submenu
                 {
-                    //account Action
-                    QAction *accountAction = new QAction("&account", this);
-                    banInfoSubMenu->addAction(accountAction);
 
-                    //character Action
-                    QAction *characterAction = new QAction("&character", this);
-                    banInfoSubMenu->addAction(characterAction);
+                    QMenu *banInfoSubMenu = new QMenu();
+                    banInfoMenu->setMenu(banInfoSubMenu);
 
-                    //ip Action
-                    QAction *ipAction = new QAction("&ip", this);
-                    banInfoSubMenu->addAction(ipAction);
+                    if(true)
+                    {
+                        //account Action
+                        QAction *accountAction = new QAction("&account", this);
+                        banInfoSubMenu->addAction(accountAction);
+
+                        //character Action
+                        QAction *characterAction = new QAction("&character", this);
+                        banInfoSubMenu->addAction(characterAction);
+
+                        //ip Action
+                        QAction *ipAction = new QAction("&ip", this);
+                        banInfoSubMenu->addAction(ipAction);
+                    }
                 }
-            }
 
-            //banlist Menu
-            QAction *banListMenu = new QAction(".&banlist", this);
-            commandSubMenu->addAction(banListMenu);
+                //banlist Menu
+                QAction *banListMenu = new QAction(".&banlist", this);
+                commandSubMenu->addAction(banListMenu);
 
-            if(true)
-            {
-                //banlist Submenu
-                QMenu *banListSubMenu = new QMenu();
-                banListMenu->setMenu(banListSubMenu);
-
-                if(true)
+                if(true)  //banlist Submenu
                 {
-                    //account Action
-                    QAction *accountAction = new QAction("&account", this);
-                    banListSubMenu->addAction(accountAction);
 
-                    //character Action
-                    QAction *characterAction = new QAction("&character", this);
-                    banListSubMenu->addAction(characterAction);
+                    QMenu *banListSubMenu = new QMenu();
+                    banListMenu->setMenu(banListSubMenu);
 
-                    //ip Action
-                    QAction *ipAction = new QAction("&ip", this);
-                    banListSubMenu->addAction(ipAction);
+                    if(true)
+                    {
+                        //account Action
+                        QAction *accountAction = new QAction("&account", this);
+                        banListSubMenu->addAction(accountAction);
+
+                        //character Action
+                        QAction *characterAction = new QAction("&character", this);
+                        banListSubMenu->addAction(characterAction);
+
+                        //ip Action
+                        QAction *ipAction = new QAction("&ip", this);
+                        banListSubMenu->addAction(ipAction);
+                    }
                 }
-            }
 
-            //character Menu
-            QAction *characterMenu = new QAction(".&character", this);
-            commandSubMenu->addAction(characterMenu);
+                //character Menu
+                QAction *characterMenu = new QAction(".&character", this);
+                commandSubMenu->addAction(characterMenu);
 
-            if(true)
-            {
-                //character Submenu
-                QMenu *characterSubMenu = new QMenu();
-                characterMenu->setMenu(characterSubMenu);
-
-                if(true)
+                if(true) //character Submenu
                 {
-                    //customize Action
-                    QAction *customizeAction = new QAction("&customize", this);
-                    characterSubMenu->addAction(customizeAction);
 
-                    //change faction Action
-                    QAction *changeFactionAction = new QAction("c&hangefaction", this);
-                    characterSubMenu->addAction(changeFactionAction);
+                    QMenu *characterSubMenu = new QMenu();
+                    characterMenu->setMenu(characterSubMenu);
 
-                    //change race Action
-                    QAction *changeRaceAction = new QAction("ch&angerace", this);
-                    characterSubMenu->addAction(changeRaceAction);
+                    if(true)
+                    {
+                        //customize Action
+                        QAction *customizeAction = new QAction("&customize", this);
+                        characterSubMenu->addAction(customizeAction);
 
-                    //deleted Action
-                    QAction *deletedAction = new QAction("&deleted", this);
-                    characterSubMenu->addAction(deletedAction);
+                        //change faction Action
+                        QAction *changeFactionAction = new QAction("c&hangefaction", this);
+                        characterSubMenu->addAction(changeFactionAction);
 
-                    //erase Action
-                    QAction *eraseAction = new QAction("&erase", this);
-                    characterSubMenu->addAction(eraseAction);
+                        //change race Action
+                        QAction *changeRaceAction = new QAction("ch&angerace", this);
+                        characterSubMenu->addAction(changeRaceAction);
 
-                    //level Action
-                    QAction *levelAction = new QAction("&level", this);
-                    characterSubMenu->addAction(levelAction);
+                        //deleted Action
+                        QAction *deletedAction = new QAction("&deleted", this);
+                        characterSubMenu->addAction(deletedAction);
 
-                    //rename Action
-                    QAction *renameAction = new QAction("&rename", this);
-                    characterSubMenu->addAction(renameAction);
+                        //erase Action
+                        QAction *eraseAction = new QAction("&erase", this);
+                        characterSubMenu->addAction(eraseAction);
 
-                    //reputation Action
-                    QAction *reputationAction = new QAction("re&putation", this);
-                    characterSubMenu->addAction(reputationAction);
+                        //level Action
+                        QAction *levelAction = new QAction("&level", this);
+                        characterSubMenu->addAction(levelAction);
 
-                    //titles Action
-                    QAction *titlesAction = new QAction("&titles", this);
-                    characterSubMenu->addAction(titlesAction);
+                        //rename Action
+                        QAction *renameAction = new QAction("&rename", this);
+                        characterSubMenu->addAction(renameAction);
+
+                        //reputation Action
+                        QAction *reputationAction = new QAction("re&putation", this);
+                        characterSubMenu->addAction(reputationAction);
+
+                        //titles Action
+                        QAction *titlesAction = new QAction("&titles", this);
+                        characterSubMenu->addAction(titlesAction);
+                    }
                 }
-            }
 
-            //combatstop Action
-            QAction *combatStopAction = new QAction(".c&ombatstop", this);
-            commandSubMenu->addAction(combatStopAction);
+                //combatstop Action
+                QAction *combatStopAction = new QAction(".c&ombatstop", this);
+                commandSubMenu->addAction(combatStopAction);
 
-            //cometome Action
-            QAction *comeToMeAction = new QAction(".cometome", this);
-            commandSubMenu->addAction(comeToMeAction);
+                //cometome Action
+                QAction *comeToMeAction = new QAction(".cometome", this);
+                commandSubMenu->addAction(comeToMeAction);
 
-            //commands Action
-            QAction *commandsAction = new QAction(".&commands", this);
-            commandSubMenu->addAction(commandsAction);
-            connect(commandsAction, SIGNAL(triggered() ), this, SLOT(commandsClickHandler() ) );
+                //cometome Submenu
+                comeToMeSubMenu = new QMenu();
+                comeToMeAction->setMenu(comeToMeSubMenu);
 
-            //event Menu
-            QAction *eventMenu = new QAction(".&event", this);
-            commandSubMenu->addAction(eventMenu);
+                //commands Action
+                QAction *commandsAction = new QAction(".&commands", this);
+                commandSubMenu->addAction(commandsAction);
+                connect(commandsAction, SIGNAL(triggered() ), this, SLOT(commandsClickHandler() ) );
 
-            if(true)
-            {
-                //event Submenu
-                QMenu *eventSubMenu = new QMenu();
-                eventMenu->setMenu(eventSubMenu);
+                //event Menu
+                QAction *eventMenu = new QAction(".&event", this);
+                commandSubMenu->addAction(eventMenu);
 
-                if(true)
+                if(true)  //event Submenu
                 {
-                    //activelist Action
-                    QAction *activeListAction = new QAction("&activelist", this);
-                    eventSubMenu->addAction(activeListAction);
 
-                    //start Action
-                    QAction *startAction = new QAction("&start", this);
-                    eventSubMenu->addAction(startAction);
+                    QMenu *eventSubMenu = new QMenu();
+                    eventMenu->setMenu(eventSubMenu);
 
-                    //ip Action
-                    QAction *stopAction = new QAction("s&top", this);
-                    eventSubMenu->addAction(stopAction);
+                    if(true)
+                    {
+                        //activelist Action
+                        QAction *activeListAction = new QAction("&activelist", this);
+                        eventSubMenu->addAction(activeListAction);
+
+                        //start Action
+                        QAction *startAction = new QAction("&start", this);
+                        eventSubMenu->addAction(startAction);
+
+                        //ip Action
+                        QAction *stopAction = new QAction("s&top", this);
+                        eventSubMenu->addAction(stopAction);
+                    }
                 }
-            }
 
-            //gm Menu
-            QAction *gmMenu = new QAction(".&gm", this);
-            commandSubMenu->addAction(gmMenu);
+                //gm Menu
+                QAction *gmMenu = new QAction(".&gm", this);
+                commandSubMenu->addAction(gmMenu);
 
-            if(true){
-                //gm Submenu
-                QMenu *gmSubMenu = new QMenu();
-                gmMenu->setMenu(gmSubMenu);
+                if(true){ //gm Submenu
 
-                if(true){
-                    //list Action
-                    QAction *gmList = new QAction("&list", this);
-                    gmSubMenu->addAction(gmList);
-                    connect(gmList, SIGNAL(triggered() ), this, SLOT(gmListClickHandler() ) );
+                    QMenu *gmSubMenu = new QMenu();
+                    gmMenu->setMenu(gmSubMenu);
+
+                    if(true){ //list Action
+
+                        QAction *gmList = new QAction("&list", this);
+                        gmSubMenu->addAction(gmList);
+                        connect(gmList, SIGNAL(triggered() ), this, SLOT(gmListClickHandler() ) );
+                    }
                 }
             }
         }
-    }
-
 }
 
 MainWindow::~MainWindow()
@@ -350,9 +377,6 @@ void MainWindow::worldProcessStopping()
     ui->WorldLabel->setPalette(worldTextPalette);
 }
 
-
-
-
 //Set Read for Text Boxes
 void MainWindow::authReadyReadStandardError()
 {
@@ -363,9 +387,6 @@ void MainWindow::worldReadyReadStandardError()
 {
     ui->worldServerText->append(myWorldProcess->readAllStandardError());
 }
-
-
-
 
 //Update World Text Box and Clear World Input
 void MainWindow::worldTextSent()
@@ -401,6 +422,42 @@ void MainWindow::accountCDL()
     myWorldProcess->write(string.toAscii());
 }
 
+void MainWindow::itemchooserwindow()
+{
+}
+
+void MainWindow::keyChooserWindow()
+{
+    ItemChooser chooser(this);
+    chooser.importCSVFile();
+    chooser.importKey();
+    chooser.exec();
+//    itemTable = chooser.itemTable;
+ //   keyData = chooser.keyData;
+
+ /*   for (int i=0; i< keyData->size(); i++)
+    {
+        QAction *action = new QAction(keyData->at(i), this);
+        addItemSubMenu->addAction(action);
+        addItemSubMenu->setStyleSheet("* { menu-scrollable: 1 }");
+        QMenu *subMenu = new QMenu;
+        action->setMenu(subMenu);
+        subMenu->setStyleSheet("* { menu-scrollable: 1 }");
+
+        if(true)
+        {
+            for (int a=0; a< itemTable->rowCount()-1 ; a++)
+            {
+                QTableWidgetItem *newItem = itemTable->item(a,i);
+                QAction *ab = new QAction(this);
+                ab->setText(newItem->text());
+                subMenu->addAction(ab);
+            }
+        }
+
+    }*/
+}
+
 void MainWindow::accountList()
 {
     myWorldProcess->write("account onlinelist\n");
@@ -423,6 +480,7 @@ void MainWindow::gmListClickHandler()
 {
     myWorldProcess->write(".gm list\n");
 }
+
 
 
 
@@ -455,3 +513,4 @@ void MainWindow::worldSendButtonClickHandler()
     worldString.append("\n");
     myWorldProcess->write(worldString.toAscii());
 }
+
