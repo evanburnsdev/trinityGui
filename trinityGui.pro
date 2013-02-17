@@ -24,9 +24,9 @@ HEADERS  += mainwindow.h \
     itemchooser.h
 
 FORMS    += \
-    ../Designer/mainwindow.ui \
-    ../Designer/announcedialog.ui \
     accountcdldialog.ui \
-    itemchooser.ui
+    itemchooser.ui \
+    mainwindow.ui \
+    announcedialog.ui
 
 OTHER_FILES +=
