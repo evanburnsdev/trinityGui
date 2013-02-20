@@ -7,12 +7,11 @@
 #include <QProcessEnvironment>
 #include <QDialog>
 #include <QMenuBar>
-#include <QTableWidget>
-#include <QStringList>
-#include <QList>
+#include <QDebug>
 #include "announcedialog.h"
 #include "accountcdldialog.h"
-#include "itemchooser.h"
+//#include "itemchooser.h"
+//#include "dataobject.h"
 
 namespace Ui {
 class MainWindow;
@@ -29,7 +28,6 @@ public:
 public slots:
     void accountCDL();
     void itemchooserwindow();
-    void keyChooserWindow();
 
     void accountList();
     void announceClickHandler();
@@ -53,6 +51,12 @@ public slots:
 
 private:
     Ui::MainWindow *ui;
+
+private slots:
+    void keyChooserWindow();
+
+signals:
+    void csvRequestSent(const bool &csvRequest);
 };
 
 #endif // MAINWINDOW_H

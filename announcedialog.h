@@ -2,6 +2,7 @@
 #define ANNOUNCEDIALOG_H
 
 #include <QDialog>
+//#include "dataobject.h"
 
 namespace Ui {
 class AnnounceDialog;

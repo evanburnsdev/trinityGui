@@ -4,6 +4,7 @@
 QString raceFilter;
 QString classFilter;
 QString typeFilter;
+bool modelUpdated;
 
 ItemChooser::ItemChooser(QWidget *parent) :
     QDialog(parent),
@@ -11,13 +12,29 @@ ItemChooser::ItemChooser(QWidget *parent) :
 {
     keyData = new QStringList;
     ui->setupUi(this);
+    cNeedCSV = true;
     this->setupFilters();
- //   connect(ui->raceCombo, SIGNAL(activated(QString)), this, SLOT(setupFilters()));
+    modelUpdated = false;
 }
 
 ItemChooser::~ItemChooser()
 {
     delete ui;
+}
+
+void ItemChooser::onDataModelDataEntered(const bool &dataModelUpdated)
+{
+    modelUpdated = dataModelUpdated;
+}
+
+void ItemChooser::loadedCSV(QStandardItemModel* &newDataModel)
+{
+    model = newDataModel;
+
+    this->importKey();
+
+    cNeedCSV = false;
+    emit this->neededCSV(cNeedCSV);
 }
 
 void ItemChooser::setupFilters()
@@ -82,12 +99,12 @@ void ItemChooser::setupFilters()
 }
 
 void ItemChooser::updateClickHandler()
-{
+{/*
     int raceInt = ui->raceCombo->currentIndex();
     raceFilter.setNum(raceInt);
     ui->tlabel->setText(raceFilter);
     bool match = false;
-    for( int y=0; y< ui->tableWidget->rowCount()-1; y++)
+    for( int y=0; y< model->rowCount(parent)-1; y++)
     {
         QTableWidgetItem *item = ui->tableWidget->item(y, 14);
         if( item->text().contains(raceFilter) )
@@ -122,59 +139,40 @@ void ItemChooser::updateClickHandler()
             match = false;
         }
         ui->tableWidget->setRowHidden(y, !match);
-    }
+    }*/
 }
 
-void ItemChooser::importCSVFile()
-{
-    QStringList rowData;
-    QStringList columnData;
-    QString fileName;
-    QString data;
-    fileName = QFileDialog::getOpenFileName(this, ("Open Table"), "~/", ("CSV_File(*.csv)"));
-    QFile importedCSV(fileName);
-    data.clear();
-    columnData.clear();
-    rowData.clear();
-    if (importedCSV.open(QFile::ReadOnly))
-    {
-        data = importedCSV.readAll();
-        rowData = data.split("\n");
-        importedCSV.close();
-    }
-    ui->tableWidget->verticalHeader()->setVisible(false);
-    ui->tableWidget->setRowCount(rowData.size());
-    ui->tableWidget->setColumnCount(139);
-    for (int x = 0; x < rowData.size(); x++)
-    {
-        columnData = rowData.at(x).split(",");
-        for (int y = 0; y < columnData.size(); y++)
-        {
-            QTableWidgetItem *newWidgetItem = new QTableWidgetItem(columnData[y]);
-            ui->tableWidget->setItem(x,y, newWidgetItem);
-        }
-    }
-    ui->tableWidget->resizeColumnsToContents();
-}
 
 void ItemChooser::importKey()
 {
-    QString fileName;
-    QString data;
-    fileName = QFileDialog::getOpenFileName(this, ("Open Key"), "~/", ("CSV_File(*.csv)"));
-    QFile importedCSV(fileName);
-    data.clear();
-    if (importedCSV.open(QFile::ReadOnly))
+    if(cNeedCSV)
     {
-        data = importedCSV.readAll();
-        importedCSV.close();
-    }
-    keyData->append(data.split(","));
-    for (int x = 0; x < keyData->size(); x++)
+        QString data;
+        QString fileName;
+        fileName = QFileDialog::getOpenFileName(this, ("Open Key"), "~/", ("CSV_File(*.csv)"));
+        QFile importedCSV(fileName);
+        data.clear();
+        if (importedCSV.open(QFile::ReadOnly))
+        {
+            data = importedCSV.readAll();
+            importedCSV.close();
+        }
+        keyData->append(data.split(","));
+        for (int x = 0; x < keyData->size(); x++)
+        {
+            QStandardItem *newItem = new QStandardItem(keyData->at(x));
+            model->setHorizontalHeaderItem(x, newItem);
+        }
+        ui->tableView->verticalHeader()->setVisible(false);
+        ui->tableView->setModel(model);
+        qDebug() << "Step 2 Complete";
+        qDebug() << "Step 3 Complete";
+        qDebug() << model->item(0, 4)->text();
+        ui->tableView->resizeColumnsToContents();
+    } else
     {
-        QTableWidgetItem *newWidgetItem = new QTableWidgetItem(keyData->at(x));
-        ui->tableWidget->setHorizontalHeaderItem(x, newWidgetItem);
- //       ui->tableWidget->setItem(0, x, newWidgetItem);
+
     }
+    this->show();
 
 }

@@ -16,12 +16,14 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     announcedialog.cpp \
     accountcdldialog.cpp \
-    itemchooser.cpp
+    itemchooser.cpp \
+    dataobject.cpp
 
 HEADERS  += mainwindow.h \
     announcedialog.h \
     accountcdldialog.h \
-    itemchooser.h
+    itemchooser.h \
+    dataobject.h
 
 FORMS    += \
     accountcdldialog.ui \

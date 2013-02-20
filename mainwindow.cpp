@@ -8,7 +8,6 @@ QObject *authParent;
 QObject *worldParent;
 QProcess *myAuthProcess = new QProcess(authParent);
 QProcess *myWorldProcess = new QProcess(worldParent);
-QTableWidget *itemTable;
 QStringList *keyData;
 QMenu *comeToMeSubMenu;
 QMenu *addItemSubMenu;
@@ -19,8 +18,6 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-
-    itemTable = new QTableWidget;
     keyData = new QStringList;
 
     //Setup Color Palettes
@@ -35,9 +32,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(myAuthProcess, SIGNAL(finished(int) ), this, SLOT(authProcessStopping()));
     connect(myWorldProcess, SIGNAL(started() ), this, SLOT(worldProcessStarting()));
     connect(myWorldProcess, SIGNAL(finished(int) ), this, SLOT(worldProcessStopping()));
-
-
-
 
         /***********************************
          *The following will set up the menu
@@ -395,9 +389,6 @@ void MainWindow::worldTextSent()
     ui->worldSendText->clear();
 }
 
-
-
-
 /**********************************************************************************************************************************
  *Buttons and Inputs:
  *********************************************************************************************************************************/
@@ -428,34 +419,7 @@ void MainWindow::itemchooserwindow()
 
 void MainWindow::keyChooserWindow()
 {
-    ItemChooser chooser(this);
-    chooser.importCSVFile();
-    chooser.importKey();
-    chooser.exec();
-//    itemTable = chooser.itemTable;
- //   keyData = chooser.keyData;
-
- /*   for (int i=0; i< keyData->size(); i++)
-    {
-        QAction *action = new QAction(keyData->at(i), this);
-        addItemSubMenu->addAction(action);
-        addItemSubMenu->setStyleSheet("* { menu-scrollable: 1 }");
-        QMenu *subMenu = new QMenu;
-        action->setMenu(subMenu);
-        subMenu->setStyleSheet("* { menu-scrollable: 1 }");
-
-        if(true)
-        {
-            for (int a=0; a< itemTable->rowCount()-1 ; a++)
-            {
-                QTableWidgetItem *newItem = itemTable->item(a,i);
-                QAction *ab = new QAction(this);
-                ab->setText(newItem->text());
-                subMenu->addAction(ab);
-            }
-        }
-
-    }*/
+   emit this->csvRequestSent(true);
 }
 
 void MainWindow::accountList()
@@ -467,8 +431,10 @@ void MainWindow::announceClickHandler()
 {
     AnnounceDialog dialog(this);
     dialog.exec();
-    QString string = dialog.announceString;
-    myWorldProcess->write(string.toAscii());
+    QString *string = new QString;
+    string->append(dialog.announceString);
+    myWorldProcess->write(string->toAscii());
+    qDebug() << string->toAscii();
 }
 
 void MainWindow::commandsClickHandler()

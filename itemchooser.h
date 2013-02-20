@@ -5,9 +5,10 @@
 #include <QFileDialog>
 #include <QDebug>
 #include <QTableWidget>
-#include <QVector>
+#include <QTableView>
 #include <QAction>
 #include <QMenu>
+#include <QStandardItemModel>
 
 namespace Ui {
 class ItemChooser;
@@ -20,20 +21,26 @@ class ItemChooser : public QDialog
 public:
     explicit ItemChooser(QWidget *parent = 0);
     ~ItemChooser();
-    QStringList *keyData;
 
     
 public slots:
-void importCSVFile();
-void importKey();
-void setupFilters();
-void updateClickHandler();
+    void onDataModelDataEntered(const bool &dataModelUpdated);
+    void loadedCSV(QStandardItemModel* &newDataModel);
+    void setupFilters();
+    void updateClickHandler();
+    void importKey();
 
 private slots:
+
+signals:
+    void neededCSV(const bool &chooserNeedCSV);
 
 
 private:
     Ui::ItemChooser *ui;
+    QStandardItemModel *model;
+    QStringList *keyData;
+    bool cNeedCSV;
 };
 
 #endif // ITEMCHOOSER_H

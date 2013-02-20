@@ -17,6 +17,8 @@ AnnounceDialog::~AnnounceDialog()
 
 void AnnounceDialog::accept()
 {
+//    DataObject dataObject;
+//    announceString = dataObject.announceString;
     if(ui->checkBox->isChecked())
     {
         announceString.append(".gmannounce ");
