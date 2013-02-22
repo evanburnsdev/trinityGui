@@ -42,27 +42,27 @@ void DataObject::onCsvRequestSent(const bool &csvRequest)
             importedCSV.close();
         }
         qDebug() << "Step 1 Complete";
-        dataTableWidget = new QTableWidget;
+//        dataTableWidget = new QTableWidget;
         dataModel = new QStandardItemModel;
-        dataTableWidget->setRowCount(125);
+//        dataTableWidget->setRowCount(rowData.size());
         dataModel->setRowCount(rowData.size());
-        dataTableWidget->setColumnCount(145);
+//        dataTableWidget->setColumnCount(145);
         dataModel->setColumnCount(145);
         for (int x = 0; x < rowData.count()-1; x++)
         {
             columnData = rowData.at(x).split(",");
-            for (int y = 0; y < 25; y++)
+            for (int y = 0; y < columnData.count(); y++)
             {
-                QTableWidgetItem *newTableItem = new QTableWidgetItem(columnData[y]);
+//                QTableWidgetItem *newTableItem = new QTableWidgetItem(columnData[y]);
                 QStandardItem *newItem = new QStandardItem(columnData[y]);
-                dataTableWidget->setItem(x,y, newTableItem);
+//                dataTableWidget->setItem(x,y, newTableItem);
                 dataModel->setItem(x,y, newItem);
             }
 
         }
         qDebug() << "widget loaded";
         qDebug() << dataModel->item(10000, 4)->text();
-        qDebug() << dataTableWidget->itemAt(0,5)->text().toAscii();
+//        qDebug() << dataTableWidget->itemAt(0,5)->text().toAscii();
     }
     this->onCSVWasImported();
 

@@ -99,47 +99,43 @@ void ItemChooser::setupFilters()
 }
 
 void ItemChooser::updateClickHandler()
-{/*
+{
+
+    QSortFilterProxyModel *raceModel = new QSortFilterProxyModel(this);
+    raceModel->setSourceModel(model);
     int raceInt = ui->raceCombo->currentIndex();
     raceFilter.setNum(raceInt);
-    ui->tlabel->setText(raceFilter);
-    bool match = false;
-    for( int y=0; y< model->rowCount(parent)-1; y++)
+    raceModel->setFilterKeyColumn(14);
+    if(raceInt != 0)
     {
-        QTableWidgetItem *item = ui->tableWidget->item(y, 14);
-        if( item->text().contains(raceFilter) )
-        {
-            match = true;
-        } else if (raceFilter == "0")
-        {
-            match = true;
-        } else if (raceFilter != "0" && item->text() == "-1")
-        {
-            match = false;
-        } else
-        {
-            match = false;
-        }
-        ui->tableWidget->setRowHidden(y, !match);
+        raceModel->setFilterFixedString(raceFilter);
     }
+    else
+    {
+        raceModel->setFilterFixedString("");
+    }
+    QSortFilterProxyModel *classModel = new QSortFilterProxyModel;
+    classModel->setSourceModel(raceModel);
     int classInt = ui->classCombo->currentIndex();
     classFilter.setNum(classInt);
-
-    for (int y=0; y< ui->tableWidget->rowCount()-1; y++)
+    classModel->setFilterKeyColumn(13);
+    if(classInt != 0)
     {
-        QTableWidgetItem *item = ui->tableWidget->item(y, 13);
-        if (item->text().contains(classFilter) )
-        {
-            match = true;
-        } else if (ui->tableWidget->isRowHidden(y) == true)
-        {
-            match = false;
-        } else
-        {
-            match = false;
-        }
-        ui->tableWidget->setRowHidden(y, !match);
-    }*/
+        classModel->setFilterFixedString(classFilter);
+    } else
+    {
+        classModel->setFilterFixedString("");
+    }
+    ui->tlabel->setText(raceFilter);
+
+    QSortFilterProxyModel *itemIdModel = new QSortFilterProxyModel;
+    itemIdModel->setSourceModel(classModel);
+    itemIdModel->setFilterKeyColumn(0);
+    itemIdModel->setFilterFixedString(ui->itemIdText->text());
+
+
+
+    ui->tableView->setModel(itemIdModel);
 }
 
 
@@ -149,8 +145,8 @@ void ItemChooser::importKey()
     {
         QString data;
         QString fileName;
-        fileName = QFileDialog::getOpenFileName(this, ("Open Key"), "~/", ("CSV_File(*.csv)"));
-        QFile importedCSV(fileName);
+//        fileName = QFileDialog::getOpenFileName(this, ("Open Key"), "~/", ("CSV_File(*.csv)"));
+        QFile importedCSV("./key.csv");
         data.clear();
         if (importedCSV.open(QFile::ReadOnly))
         {
@@ -168,11 +164,95 @@ void ItemChooser::importKey()
         qDebug() << "Step 2 Complete";
         qDebug() << "Step 3 Complete";
         qDebug() << model->item(0, 4)->text();
-        ui->tableView->resizeColumnsToContents();
+
+        QString widthData;
+        QString widthFileName;
+//        widthFileName = QFileDialog::getOpenFileName(this, ("Open ColumnWidth"), "~/", ("CSV_File(*.csv)"));
+        QFile importedWidthCSV("./columnsize.csv");
+        widthData.clear();
+        if (importedWidthCSV.open(QFile::ReadOnly))
+        {
+            widthData = importedWidthCSV.readAll();
+            importedWidthCSV.close();
+        }
+        QStringList widthDataList = widthData.split("\n");
+        for (int i = 0; i < widthDataList.size(); i++)
+        {
+            ui->tableView->setColumnWidth(i, widthDataList.at(i).toInt());
+        }
     } else
     {
 
     }
     this->show();
 
+}
+
+void ItemChooser::tableViewGetCoorid()
+{
+    QModelIndexList selectedIndex = ui->tableView->selectionModel()->selectedIndexes();
+    int selectedRowInt = selectedIndex.at(0).row();
+    int selectedColInt = selectedIndex.at(0).column();
+    QString selectedRowString = QString::number(selectedRowInt);
+    QString selectedColString = QString::number(selectedColInt);
+    ui->tlabel->setText(selectedRowString);
+    ui->yLabel->setText(selectedColString);
+    ui->nameLabel->setText(ui->tableView->model()->data(ui->tableView->model()->index(selectedRowInt, 4)).toString());
+    ui->qualityLabel->setText(ui->tableView->model()->data(ui->tableView->model()->index(selectedRowInt, 6)).toString()+" Quality");
+    ui->itemLevelLabel->setText(ui->tableView->model()->data(ui->tableView->model()->index(selectedRowInt, 15)).toString()+" Item Level");
+    ui->armorLabel->setText(ui->tableView->model()->data(ui->tableView->model()->index(selectedRowInt, 56)).toString()+" Armor");
+    ui->blockLabel->setText(ui->tableView->model()->data(ui->tableView->model()->index(selectedRowInt, 112)).toString()+" Block");
+    ui->materialLabel->setText(ui->tableView->model()->data(ui->tableView->model()->index(selectedRowInt, 108)).toString()+" Material");
+    ui->bindingsLabel->setText(ui->tableView->model()->data(ui->tableView->model()->index(selectedRowInt, 101)).toString()+" Bindings");
+    /*
+     *Bonding 101???
+     *-1 Binds when picked up
+     * 0 No binding?
+     * 1 Binds to Battle.net account
+     * 2 Binds when equiped
+     *
+     *
+     *Material 7 = Cloth
+     *          8 = Leather
+     *          5 = Mail
+     *
+     *
+     *Agility = 3
+    Strength = 4
+    Intellect = 5
+    Spirit = 6
+    Stamina = 7
+    Defense Rating = 12
+    Dodge Rating = 13
+    Parry Rating = 14
+    Block Rating = 15
+    Melee Hit = 16
+    Ranged Hit = 17
+    Spell Hit = 18
+    Melee Crit = 19
+    Ranged Crit = 20
+    Spell Crit = 21
+    Melee Haste = 28
+    Ranged Haste = 29
+    Spell Haste = 30
+    General Hit = 31
+    General Crit = 32
+    Resilience = 35
+    General Haste = 36
+    Expertise = 37
+*/
+
+}
+
+void ItemChooser::accept()
+{
+
+    QModelIndexList selectedRow = ui->tableView->selectionModel()->selectedIndexes();
+    int selectedInt = selectedRow.at(0).row();
+    QString selectedRowString = ui->tableView->model()->data(ui->tableView->model()->index(selectedInt, 0)).toString();
+    QString additem = ".additem";
+ //   QString selectedRowString = ui->tableView->selectionModel();
+    additem.append(" ");
+    additem.append(selectedRowString);
+    qDebug() << additem;
 }

@@ -9,6 +9,7 @@
 #include <QAction>
 #include <QMenu>
 #include <QStandardItemModel>
+#include <QSortFilterProxyModel>
 
 namespace Ui {
 class ItemChooser;
@@ -28,7 +29,9 @@ public slots:
     void loadedCSV(QStandardItemModel* &newDataModel);
     void setupFilters();
     void updateClickHandler();
+    void accept();
     void importKey();
+    void tableViewGetCoorid();
 
 private slots:
 
